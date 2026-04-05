@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Kris Steps 👑</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --cream: #FDF8EF;
+    --blush: #F5E6D8;
+    --deep: #1A1008;
+    --muted: #8A7560;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    padding-bottom: 24px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.45;
+  }
+
+  /* ── Header ── */
+  header {
+    width: 100%;
+    text-align: center;
+    padding: 28px 20px 0;
+  }
+
+  .crown { font-size: 26px; display: block; margin-bottom: 2px; animation: sway 3s ease-in-out infinite; }
+  @keyframes sway { 0%,100%{transform:rotate(-6deg)} 50%{transform:rotate(6deg)} }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 8vw, 46px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  h1 span { color: var(--gold); font-style: italic; }
+
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  .divider {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 16px auto;
+  }
+
+  /* ── Status ── */
+  .status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    justify-content: center; margin-bottom: 6px;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #CCC; }
+  .status-dot.active { background: #4CAF50; animation: pulse 2s ease-in-out infinite; }
+  .status-dot.error  { background: #E74C3C; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+  /* ── Step Ring ── */
+  .step-ring {
+    position: relative; width: 200px; height: 200px;
+    margin: 4px auto 10px;
+  }
+  .step-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .ring-track    { fill: none; stroke: #EDE0CC; stroke-width: 5; }
+  .ring-progress {
+    fill: none; stroke: var(--gold); stroke-width: 5;
+    stroke-linecap: round; stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+    transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
+  }
+  .step-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .step-count {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(44px, 13vw, 68px);
+    font-weight: 900; line-height: 1;
+    transition: transform .15s ease;
+  }
+  .step-count.bump { animation: bump .25s ease; }
+  @keyframes bump { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .step-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+  /* ── Milestone bar ── */
+  .milestone-bar {
+    width: calc(100% - 48px); max-width: 360px;
+    margin: 0 auto 12px;
+  }
+  .milestone-text {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--muted); margin-bottom: 5px;
+  }
+  .milestone-track { height: 4px; background: #EDE0CC; border-radius: 2px; overflow: hidden; }
+  .milestone-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px; width: 0%;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── Kris Photo Card ── */
+  .kris-card {
+    width: calc(100% - 48px); max-width: 360px;
+    margin: 0 auto 14px;
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid #EDE0CC;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(26,16,8,.07);
+    animation: slideIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes slideIn { from{transform:translateY(14px) scale(.95);opacity:0} to{transform:translateY(0) scale(1);opacity:1} }
+
+  /* Photo container — clips to show only part of the full image */
+  .kris-photo-wrap {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+  .kris-photo {
+    width: 100%;
+    /* background-image set inline via JS */
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    transition: background-position .6s ease, filter .4s ease;
+  }
+
+  /* Gold shimmer overlay on the photo */
+  .kris-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 55%, rgba(255,255,255,.92) 100%);
+  }
+
+  .kris-info {
+    padding: 14px 18px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .kris-emoji-badge {
+    font-size: 36px;
+    line-height: 1;
+    flex-shrink: 0;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0) rotate(-20deg)} to{transform:scale(1) rotate(0deg)} }
+
+  .kris-text-block { flex: 1; }
+  .kris-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--gold); margin-bottom: 3px;
+  }
+  .kris-quote { font-size: 14px; line-height: 1.5; color: var(--deep); }
+  .kris-milestone { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Permission notice ── */
+  .perm-notice {
+    width: calc(100% - 48px); max-width: 360px;
+    margin: 0 auto 12px;
+    background: #FFF8EC; border: 1px solid #F0D080;
+    border-radius: 12px; padding: 10px 14px;
+    font-size: 12px; color: var(--muted);
+    text-align: center; line-height: 1.5;
+  }
+
+  /* ── Buttons ── */
+  .btn-row {
+    display: flex; gap: 10px;
+    width: calc(100% - 48px); max-width: 360px;
+    margin: 0 auto;
+  }
+  .btn {
+    flex: 1; padding: 15px 10px;
+    border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn-primary { background: var(--deep); color: var(--cream); letter-spacing: .5px; }
+  .btn-share {
+    background: var(--gold); color: var(--deep);
+    font-weight: 700; letter-spacing: .5px;
+    box-shadow: 0 4px 16px rgba(201,168,76,.35);
+  }
+  .btn-share:active { box-shadow: none; }
+
+  /* ── Confetti ── */
+  .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 200; display: none; }
+  .cp {
+    position: absolute; width: 8px; height: 8px; border-radius: 2px;
+    animation: cf 1.2s ease-out forwards;
+  }
+  @keyframes cf { 0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1} 100%{transform:translateY(320px) rotate(720deg) scale(.2);opacity:0} }
+
+  /* ── Gold flash ── */
+  .flash { position: fixed; inset: 0; background: var(--gold); opacity: 0; pointer-events: none; z-index: 150; }
+  .flash.fire { animation: fl .5s ease-out forwards; }
+  @keyframes fl { 0%{opacity:.3} 100%{opacity:0} }
+
+  footer {
+    margin-top: 20px;
+    font-size: 10px; color: var(--muted);
+    text-align: center; letter-spacing: 1.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+<div class="confetti-wrap" id="confetti"></div>
+
+<header>
+  <span class="crown">👑</span>
+  <h1>Kris <span>Steps</span></h1>
+  <p class="tagline">A momager-approved fitness app</p>
+</header>
+
+<div class="divider"></div>
+
+<div class="status">
+  <span class="status-dot" id="statusDot"></span>
+  <span id="statusText">Tap Start to begin</span>
+</div>
+
+<div class="step-ring">
+  <svg viewBox="0 0 180 180">
+    <circle class="ring-track"    cx="90" cy="90" r="83"/>
+    <circle class="ring-progress" id="ringProgress" cx="90" cy="90" r="83"/>
+  </svg>
+  <div class="step-center">
+    <div class="step-count" id="stepCount">0</div>
+    <div class="step-label">steps</div>
+  </div>
+</div>
+
+<div class="milestone-bar">
+  <div class="milestone-text">
+    <span id="milestoneLabel">Next: 100 steps</span>
+    <span id="milestonePct">0%</span>
+  </div>
+  <div class="milestone-track">
+    <div class="milestone-fill" id="milestoneFill"></div>
+  </div>
+</div>
+
+<!-- Kris Photo Card -->
+<div class="kris-card" id="krisCard">
+  <div class="kris-photo-wrap">
+    <div class="kris-photo" id="krisPhoto"></div>
+  </div>
+  <div class="kris-info">
+    <div class="kris-emoji-badge" id="krisEmoji">👸</div>
+    <div class="kris-text-block">
+      <div class="kris-name">Kris Jenner</div>
+      <div class="kris-quote" id="krisQuote">You're doing amazing sweetie. Now start walking.</div>
+      <div class="kris-milestone" id="krisMilestone"></div>
+    </div>
+  </div>
+</div>
+
+<div class="perm-notice" id="permNotice" style="display:none">
+  📱 Tap "Start Counting" — iPhone requires motion permission (iOS 13+).
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" id="mainBtn" onclick="handleMainBtn()">Start Counting</button>
+  <button class="btn btn-share" onclick="handleShare()">✦ Share</button>
+</div>
+
+<footer>KRIS STEPS · FOR THE CULTURE · EST. 2025</footer>
+
+<script>
+  // ── Image ──────────────────────────────────────────────────────────────────
+  // The uploaded photo has two Kris images stacked vertically:
+  // TOP half  (~0-50%)  = "let that shit go" glowy Kris  → calm / early milestones
+  // BOTTOM half (~50-100%) = empress Kris               → high milestones
+  const IMG_B64 = "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";
+  const IMG_SRC = "data:image/jpeg;base64," + IMG_B64;
+
+  // background-position-y values to crop each half
+  // We use background-size: cover on a 180px tall box; image is ~2:1 tall
+  // top half  → position 0% (show top)
+  // bottom half → position 100% (show bottom)
+  const PHOTO_TOP    = "center 15%";   // glowy saint Kris
+  const PHOTO_BOTTOM = "center 80%";   // empress Kris
+
+  const krisPhoto = document.getElementById('krisPhoto');
+  krisPhoto.style.backgroundImage = `url(${IMG_SRC})`;
+  krisPhoto.style.backgroundPosition = PHOTO_TOP;
+  krisPhoto.style.backgroundSize = "cover";
+
+  // ── Data ───────────────────────────────────────────────────────────────────
+  const MILESTONES = [
+    { steps:   100, emoji:'😏', quote:"Okay, you actually moved. I'm impressed. A little.",            photo: PHOTO_TOP },
+    { steps:   250, emoji:'💅', quote:"That's cute. But have you checked your notifications? Neither have I — I'm too busy managing.",  photo: PHOTO_TOP },
+    { steps:   500, emoji:'🥂', quote:"Five hundred steps! We're celebrating. I'll have Khloé call the caterer.",                       photo: PHOTO_TOP },
+    { steps:  1000, emoji:'😤', quote:"A thousand steps! You're officially on-brand. The brand is walking.",                            photo: PHOTO_TOP },
+    { steps:  2000, emoji:'👑', quote:"Two thousand. That's more steps than I take in a week. I have people for that.",                 photo: PHOTO_BOTTOM },
+    { steps:  5000, emoji:'🚨', quote:"FIVE THOUSAND?? This is a crisis. A beautiful, inspiring crisis. I'm calling PMK.",             photo: PHOTO_BOTTOM },
+    { steps:  8000, emoji:'🫣', quote:"Are you okay?? Who walks this much?? Call me. Actually, call my assistant.",                     photo: PHOTO_BOTTOM },
+    { steps: 10000, emoji:'🎉', quote:"TEN THOUSAND STEPS. I'm putting you in the family. The Jenner name is yours.",                  photo: PHOTO_BOTTOM },
+    { steps: 15000, emoji:'😱', quote:"You've walked more than I've walked in my entire life. I don't know how to feel.",              photo: PHOTO_BOTTOM },
+    { steps: 20000, emoji:'🏆', quote:"Twenty thousand. You're a brand now. I'm your momager. We need to talk deals.",                 photo: PHOTO_BOTTOM },
+  ];
+
+  const IDLE = [
+    { emoji:'👸', quote:"You're doing amazing sweetie. Now start walking.", photo: PHOTO_TOP },
+    { emoji:'☕', quote:"I was just sitting here, managing things. You should walk.", photo: PHOTO_TOP },
+    { emoji:'📱', quote:"Every step is content. Every step is a brand moment.", photo: PHOTO_TOP },
+    { emoji:'💼', quote:"I didn't build this empire by standing still. Move.", photo: PHOTO_BOTTOM },
+    { emoji:'🌟', quote:"The only bad step is no step. And bad press. But mostly no step.", photo: PHOTO_BOTTOM },
+  ];
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let steps = 0, tracking = false, lastAccel = null;
+  let stepCooldown = false, lastMilestone = 0;
+  const CIRC = 521; // 2π × 83
+
+  // ── DOM ────────────────────────────────────────────────────────────────────
+  const stepCountEl   = document.getElementById('stepCount');
+  const ringProgress  = document.getElementById('ringProgress');
+  const mainBtn       = document.getElementById('mainBtn');
+  const statusDot     = document.getElementById('statusDot');
+  const statusText    = document.getElementById('statusText');
+  const krisCard      = document.getElementById('krisCard');
+  const krisEmoji     = document.getElementById('krisEmoji');
+  const krisQuote     = document.getElementById('krisQuote');
+  const krisMilestone = document.getElementById('krisMilestone');
+  const milestoneFill = document.getElementById('milestoneFill');
+  const milestoneLabel= document.getElementById('milestoneLabel');
+  const milestonePct  = document.getElementById('milestonePct');
+  const permNotice    = document.getElementById('permNotice');
+  const flash         = document.getElementById('flash');
+  const confettiEl    = document.getElementById('confetti');
+
+  // ── Motion ─────────────────────────────────────────────────────────────────
+  function handleMotion(e) {
+    const a = e.accelerationIncludingGravity || e.acceleration;
+    if (!a) return;
+    const mag = Math.sqrt((a.x||0)**2 + (a.y||0)**2 + (a.z||0)**2);
+    if (!lastAccel) { lastAccel = mag; return; }
+    const delta = Math.abs(mag - lastAccel);
+    lastAccel = mag;
+    if (delta > 1.2 && !stepCooldown) {
+      steps++;
+      stepCooldown = true;
+      setTimeout(() => stepCooldown = false, 350);
+      updateUI();
+      checkMilestone();
+    }
+  }
+
+  // ── UI ─────────────────────────────────────────────────────────────────────
+  function updateUI() {
+    stepCountEl.textContent = steps.toLocaleString();
+    stepCountEl.classList.remove('bump');
+    void stepCountEl.offsetWidth;
+    stepCountEl.classList.add('bump');
+
+    const pct = Math.min(steps / 10000, 1);
+    ringProgress.style.strokeDashoffset = CIRC - pct * CIRC;
+
+    const next = MILESTONES.find(m => m.steps > steps);
+    const prevSteps = (() => { const p = MILESTONES.filter(m => m.steps <= steps); return p.length ? p[p.length-1].steps : 0; })();
+    if (next) {
+      const prog = (steps - prevSteps) / (next.steps - prevSteps) * 100;
+      milestoneFill.style.width = Math.min(prog, 100) + '%';
+      milestoneLabel.textContent = `Next: ${next.steps.toLocaleString()} steps`;
+      milestonePct.textContent = Math.round(Math.min(prog, 100)) + '%';
+    } else {
+      milestoneFill.style.width = '100%';
+      milestoneLabel.textContent = "You're a legend 👑";
+      milestonePct.textContent = '100%';
+    }
+  }
+
+  function showKrisReaction(data, milestoneSteps) {
+    krisEmoji.textContent = data.emoji;
+    krisQuote.textContent = data.quote;
+    krisMilestone.textContent = milestoneSteps ? `📍 ${milestoneSteps.toLocaleString()} steps reached` : '';
+    krisPhoto.style.backgroundPosition = data.photo;
+
+    // Re-trigger animations
+    krisCard.style.animation = 'none';
+    void krisCard.offsetWidth;
+    krisCard.style.animation = 'slideIn .4s cubic-bezier(.34,1.56,.64,1)';
+
+    krisEmoji.style.animation = 'none';
+    void krisEmoji.offsetWidth;
+    krisEmoji.style.animation = 'popIn .4s cubic-bezier(.34,1.56,.64,1)';
+  }
+
+  function checkMilestone() {
+    const reached = MILESTONES.find(m => m.steps <= steps && m.steps > lastMilestone);
+    if (!reached) return;
+    lastMilestone = reached.steps;
+
+    // Flash + confetti
+    flash.classList.remove('fire');
+    void flash.offsetWidth;
+    flash.classList.add('fire');
+    spawnConfetti();
+    if (navigator.vibrate) navigator.vibrate([80,40,80]);
+
+    showKrisReaction(reached, reached.steps);
+  }
+
+  function spawnConfetti() {
+    confettiEl.style.display = 'block';
+    confettiEl.innerHTML = '';
+    const colors = ['#C9A84C','#F0D080','#1A1008','#F5E6D8','#fff','#E8A0A0'];
+    for (let i = 0; i < 32; i++) {
+      const p = document.createElement('div');
+      p.className = 'cp';
+      p.style.cssText = `left:${Math.random()*100}%;top:${15+Math.random()*35}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.35}s;animation-duration:${.9+Math.random()*.7}s;transform:rotate(${Math.random()*360}deg)`;
+      confettiEl.appendChild(p);
+    }
+    setTimeout(() => confettiEl.style.display = 'none', 1900);
+  }
+
+  // ── Start / Stop ────────────────────────────────────────────────────────────
+  function setStatus(cls, txt) {
+    statusDot.className = 'status-dot ' + cls;
+    statusText.textContent = txt;
+  }
+
+  async function handleMainBtn() {
+    if (tracking) {
+      window.removeEventListener('devicemotion', handleMotion);
+      tracking = false;
+      mainBtn.textContent = 'Start Counting';
+      setStatus('', 'Paused');
+      const q = IDLE[Math.floor(Math.random() * IDLE.length)];
+      showKrisReaction(q, null);
+      return;
+    }
+
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      permNotice.style.display = 'block';
+      try {
+        const p = await DeviceMotionEvent.requestPermission();
+        if (p !== 'granted') {
+          setStatus('error', 'Permission denied');
+          showKrisReaction({ emoji:'😤', quote:"You denied me. I've never been denied. I'm calling my lawyer.", photo: PHOTO_TOP }, null);
+          return;
+        }
+        permNotice.style.display = 'none';
+      } catch(e) { setStatus('error', 'Permission error'); return; }
+    } else if (typeof DeviceMotionEvent === 'undefined') {
+      setStatus('error', 'No motion sensor');
+      showKrisReaction({ emoji:'🤷', quote:"Your device has no motion sensor. Even I need a phone upgrade sometimes.", photo: PHOTO_TOP }, null);
+      return;
+    }
+
+    window.addEventListener('devicemotion', handleMotion);
+    tracking = true;
+    mainBtn.textContent = 'Pause';
+    setStatus('active', 'Counting steps');
+    showKrisReaction({ emoji:'🏃', quote:"Walk like there's a camera on you. There probably is. I arranged it.", photo: PHOTO_TOP }, null);
+  }
+
+  // ── Share ───────────────────────────────────────────────────────────────────
+  function handleShare() {
+    const last = MILESTONES.filter(m => m.steps <= steps).pop();
+    const txt = last
+      ? `I just hit the ${last.steps.toLocaleString()}-step milestone on Kris Steps! You're doing amazing sweetie 👑 #KrisSteps #DoingAmazingSweetie`
+      : `I've walked ${steps.toLocaleString()} steps on Kris Steps — the momager-approved fitness app 👑 #KrisSteps`;
+    if (navigator.share) {
+      navigator.share({ title:'Kris Steps 👑', text:txt, url:window.location.href }).catch(()=>{});
+    } else {
+      navigator.clipboard?.writeText(txt + '\n' + window.location.href).then(() => {
+        const b = document.querySelector('.btn-share');
+        const orig = b.textContent;
+        b.textContent = '✓ Copied!';
+        setTimeout(() => b.textContent = orig, 2000);
+      }).catch(() => alert(txt));
+    }
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) permNotice.style.display = 'block';
+  updateUI();
+</script>
+</body>
+</html>
